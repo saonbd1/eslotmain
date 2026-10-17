@@ -54,12 +54,26 @@ export const shortLinks = pgTable('short_links', {
   destination: text('destination').notNull(),
   userId: uuid('user_id'),
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  // UTM parameters
+  utmSource: text('utm_source'),
+  utmMedium: text('utm_medium'),
+  utmCampaign: text('utm_campaign'),
+  utmTerm: text('utm_term'),
+  utmContent: text('utm_content'),
 })
 
 export const shortLinkEvents = pgTable('short_link_events', {
   id: uuid('id').primaryKey().defaultRandom(),
   code: text('code').notNull(),
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  // Enhanced analytics data
+  country: text('country'),
+  city: text('city'),
+  device: text('device'),
+  browser: text('browser'),
+  os: text('os'),
+  referrer: text('referrer'),
+  ipAddress: text('ip_address'),
 })
 
 export const blogPosts = pgTable('blog_posts', {

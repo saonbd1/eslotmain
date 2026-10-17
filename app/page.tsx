@@ -18,6 +18,11 @@ import {
 
 export default function Page() {
   const [url, setUrl] = useState('')
+  const [customSlug, setCustomSlug] = useState('')
+  const [utmSource, setUtmSource] = useState('')
+  const [utmMedium, setUtmMedium] = useState('')
+  const [utmCampaign, setUtmCampaign] = useState('')
+  const [showAdvanced, setShowAdvanced] = useState(false)
   const [shortened, setShortened] = useState<string | null>(null)
   const [copied, setCopied] = useState(false)
   const [isShortening, setIsShortening] = useState(false)
@@ -34,7 +39,13 @@ export default function Page() {
       const response = await fetch('/api/shorten', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ url }),
+        body: JSON.stringify({
+          url,
+          customSlug: customSlug || undefined,
+          utm_source: utmSource || undefined,
+          utm_medium: utmMedium || undefined,
+          utm_campaign: utmCampaign || undefined,
+        }),
       })
       const payload = await response.json() as { shortUrl?: string; error?: string }
       if (!response.ok || !payload.shortUrl) throw new Error(payload.error || 'Unable to shorten this URL right now.')
@@ -96,6 +107,45 @@ export default function Page() {
               {isShortening ? 'Shortening…' : 'Shorten URL'} <ArrowRightIcon size={17} />
             </button>
           </div>
+          <button className="advanced-toggle" type="button" onClick={() => setShowAdvanced(!showAdvanced)}>
+            {showAdvanced ? 'Hide' : 'Show'} advanced options <ChevronRightIcon size={14} className={showAdvanced ? 'rotate-down' : ''} />
+          </button>
+          {showAdvanced && (
+            <div className="advanced-options">
+              <div className="input-wrap">
+                <input
+                  aria-label="Custom slug (optional)"
+                  value={customSlug}
+                  onChange={(event) => setCustomSlug(event.target.value)}
+                  placeholder="Custom slug (optional, e.g. my-link)"
+                />
+              </div>
+              <div className="input-wrap">
+                <input
+                  aria-label="UTM Source (optional)"
+                  value={utmSource}
+                  onChange={(event) => setUtmSource(event.target.value)}
+                  placeholder="UTM Source (optional)"
+                />
+              </div>
+              <div className="input-wrap">
+                <input
+                  aria-label="UTM Medium (optional)"
+                  value={utmMedium}
+                  onChange={(event) => setUtmMedium(event.target.value)}
+                  placeholder="UTM Medium (optional)"
+                />
+              </div>
+              <div className="input-wrap">
+                <input
+                  aria-label="UTM Campaign (optional)"
+                  value={utmCampaign}
+                  onChange={(event) => setUtmCampaign(event.target.value)}
+                  placeholder="UTM Campaign (optional)"
+                />
+              </div>
+            </div>
+          )}
           {errorMessage && <p className="form-error" role="alert">{errorMessage}</p>}
           {shortened && (
             <div className="result-row">
